@@ -52,6 +52,10 @@ resource "azurerm_kubernetes_cluster" "default" {
     vnet_subnet_id  = module.network.vnet_subnets[0]
   }
 
+  network_profile {
+    network_plugin = "azure"
+  }
+
   service_principal {
     client_id     = var.appId
     client_secret = var.password
