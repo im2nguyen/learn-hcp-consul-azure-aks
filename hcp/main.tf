@@ -55,30 +55,16 @@ module "hcp_peering" {
   prefix               = var.cluster_id
 }
 
-
-// data "hcp_azure_peering_connection" "peering" {
-//   hvn_link              = hcp_hvn.hvn.self_link
-//   peering_id            = "${var.cluster_id}-peer"
-//   wait_for_active_state = true
-// }
-
-// resource "azurerm_network_security_rule" "hcp_consul" {
-//   name                        = "hcp-consul-aks-sr"
-//   priority                    = 200
-//   direction                   = "Inbound"
-//   access                      = "Allow"
-//   protocol                    = "*"
-//   source_address_prefix       = var.hvn_cidr_block
-//   source_port_range           = "*"
-//   destination_address_prefix  = "*"
-//   destination_port_range      = "8301"
-//   resource_group_name         = data.terraform_remote_state.azure.outputs.azure_rg_name
-//   network_security_group_name = data.terraform_remote_state.azure.outputs.azure_nsg_name
-// }
-
-// resource "hcp_hvn_route" "route" {
-//   hvn_link         = hcp_hvn.hvn.self_link
-//   hvn_route_id     = "${var.hvn_id}-route-aks"
-//   destination_cidr = data.azurerm_virtual_network.vnet.address_space[0]
-//   target_link      = data.hcp_azure_peering_connection.peering.self_link
-// }
+resource "azurerm_network_security_rule" "ingress_gw" {
+  name                        = "ingress-gateway"
+  priority                    = 200
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "*"
+  source_address_prefix       = "*"
+  source_port_range           = "*"
+  destination_address_prefix  = "*"
+  destination_port_range      = "8080"
+  resource_group_name         = data.terraform_remote_state.azure.outputs.azure_rg_name
+  network_security_group_name = data.terraform_remote_state.azure.outputs.azure_nsg_name
+}
